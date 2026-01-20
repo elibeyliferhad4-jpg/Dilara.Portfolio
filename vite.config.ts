@@ -1,19 +1,44 @@
-import { defineConfig } from 'vite'
-import path from 'path'
-import tailwindcss from '@tailwindcss/vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react-swc";
+import { resolve } from "path";
+import { writeFileSync } from "fs";
 
 export default defineConfig({
+  // Base path for GitHub Pages (root)
+  base: "/",
+
   plugins: [
-    // The React and Tailwind plugins are both required for Make, even if
-    // Tailwind is not being actively used – do not remove them
     react(),
-    tailwindcss(),
+
+    // Writes .nojekyll + CNAME into /docs automatically
+    {
+      name: "pages-meta",
+      writeBundle() {
+        const outDir = "docs";
+
+        // Prevent Jekyll processing
+        writeFileSync(resolve(outDir, ".nojekyll"), "");
+
+        // Custom domain (your domain)
+        writeFileSync(resolve(outDir, "CNAME"), "farhadalibayli.site\n");
+      },
+    },
   ],
+
   resolve: {
     alias: {
-      // Alias @ to the src directory
-      '@': path.resolve(__dirname, './src'),
+      "@": resolve(__dirname, "./src"),
     },
   },
-})
+
+  build: {
+    target: "esnext",
+    outDir: "docs",
+    assetsDir: "assets",
+  },
+
+  server: {
+    port: 3000,
+    open: true,
+  },
+});
