@@ -8,6 +8,8 @@ export default defineConfig({
 
   plugins: [
     react(),
+
+    // create .nojekyll in docs after build
     {
       name: "pages-meta",
       writeBundle() {
@@ -27,5 +29,7 @@ export default defineConfig({
     target: "esnext",
     outDir: "docs",
     assetsDir: "assets",
+    // important for github pages
+    emptyOutDir: true,
   },
 });
